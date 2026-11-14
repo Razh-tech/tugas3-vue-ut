@@ -1,0 +1,17 @@
+<div class="badge-wrapper" @mouseenter="showTooltip = true" @mouseleave="showTooltip = false">
+  <!-- Badge Status (v-if / v-else-if / v-else) -->
+  <span v-if="qty === 0" class="badge badge-kosong">
+    ✕ Kosong
+  </span>
+  <span v-else-if="qty < safety" class="badge badge-menipis">
+    ⚠ Menipis
+  </span>
+  <span v-else class="badge badge-aman">
+    ✓ Aman
+  </span>
+
+  <!-- Tooltip preview catatanHTML saat mouse hover -->
+  <div v-show="showTooltip && catatan" class="tooltip-box">
+    <div v-html="catatan"></div>
+  </div>
+</div>

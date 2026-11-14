@@ -1,0 +1,97 @@
+<div class="card">
+  <div class="card-title">
+    <span>Pelacakan Status Pengiriman Delivery Order (DO)</span>
+  </div>
+
+  <!-- Form Pencarian: Mendukung Event Enter & Esc -->
+  <div class="filter-bar" style="background:#edf2f7;">
+    <div class="form-group" style="flex:1;">
+      <label>Cari Berdasarkan Nomor DO atau NIM:</label>
+      <input 
+        type="text" 
+        v-model.trim="searchKeyword" 
+        class="form-control"
+        placeholder="Ketik Nomor DO (misal: DO2025-001) atau NIM lalu tekan Enter..."
+        @keyup.enter="handleSearch"
+        @keyup.esc="handleResetSearch">
+      <span class="help-text">
+        Tekan <strong>[Enter]</strong> untuk mencari, tekan <strong>[Esc]</strong> untuk reset/clear.
+      </span>
+    </div>
+    <div class="form-group" style="display:flex; flex-direction:row; gap:8px;">
+      <button class="btn btn-primary" @click="handleSearch">Cari DO</button>
+      <button class="btn btn-outline" @click="handleResetSearch">Reset</button>
+    </div>
+  </div>
+
+  <!-- Hasil Pencarian -->
+  <div v-if="filteredTrackingList.length > 0">
+    <!-- Demonstrasi v-for dengan zero-based index -->
+    <div 
+      v-for="(entry, index) in filteredTrackingList" 
+      :key="index" 
+      class="card" 
+      style="margin-bottom:1.5rem; border-left: 4px solid var(--ut-blue);">
+      
+      <!-- Demonstrasi v-for dengan name-based index (value, key) in Object -->
+      <div v-for="(detail, doNumber) in entry" :key="doNumber">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
+          <div>
+            <h3 style="color:var(--ut-blue); margin-bottom:2px;">
+              {{ doNumber }}
+            </h3>
+            <span style="font-size:0.85rem; color:#64748b;">
+              Tanggal Pengiriman: {{ detail.tanggalKirim | formatTanggal }}
+            </span>
+          </div>
+          <span class="badge" style="background:#e0f2fe; color:#0369a1; font-size:0.9rem;">
+            ● {{ detail.status }}
+          </span>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:1rem; font-size:0.9rem;">
+          <div><strong>NIM:</strong> {{ detail.nim }}</div>
+          <div><strong>Nama Penerima:</strong> {{ detail.nama }}</div>
+          <div><strong>Ekspedisi:</strong> {{ detail.ekspedisi }}</div>
+          <div><strong>Paket Bahan Ajar:</strong> {{ detail.paket }}</div>
+          <div><strong>Total Biaya:</strong> {{ detail.total | rupiah }}</div>
+        </div>
+
+        <!-- Riwayat Perjalanan Pengiriman -->
+        <h4 style="font-size:1rem; color:#334155; margin-top:1rem; border-bottom:1px solid #e2e8f0; padding-bottom:4px;">
+          Riwayat Perjalanan Pengiriman
+        </h4>
+        <div class="timeline">
+          <div v-for="(p, pIdx) in detail.perjalanan" :key="pIdx" class="timeline-item">
+            <div class="timeline-point"></div>
+            <div class="timeline-time">{{ p.waktu }}</div>
+            <div class="timeline-desc">{{ p.keterangan }}</div>
+          </div>
+        </div>
+
+        <!-- Form Tambah Status Perjalanan Baru -->
+        <div style="background:#f8fafc; padding:12px; border-radius:6px; margin-top:12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <input 
+            type="text" 
+            v-model.trim="newStatusInputs[doNumber]" 
+            class="form-control" 
+            placeholder="Tambah keterangan lokasi/status baru..."
+            style="flex:1;"
+            @keyup.enter="addProgress(detail, doNumber)">
+          <button class="btn btn-warning btn-sm" @click="addProgress(detail, doNumber)">
+            + Update Perjalanan
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-else style="text-align:center; padding:30px; color:#64748b;">
+    <p v-if="appliedKeyword">
+      Data pengiriman dengan kata kunci "<strong>{{ appliedKeyword }}</strong>" tidak ditemukan.
+    </p>
+    <p v-else>
+      Silakan masukkan Nomor DO atau NIM pada kolom pencarian di atas untuk melihat status tracking.
+    </p>
+  </div>
+</div>

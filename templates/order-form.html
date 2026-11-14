@@ -1,0 +1,107 @@
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+  <div class="card-title">
+    <span>Buat Delivery Order (DO) Pemesanan Bahan Ajar Baru</span>
+  </div>
+
+  <form @submit.prevent="submitOrder">
+    <!-- Nomor DO Tergenerate Otomatis -->
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>Nomor DO (Tergenerate Otomatis):</label>
+      <input 
+        type="text" 
+        :value="generatedDONumber" 
+        class="form-control" 
+        readonly 
+        style="background:#e2e8f0; font-weight:bold; color:var(--ut-blue);">
+      <span class="help-text">Format: DO + Tahun Berjalan + Sequence Number</span>
+    </div>
+
+    <!-- NIM & Nama -->
+    <div style="display:flex; gap:12px; margin-bottom:12px;">
+      <div class="form-group" style="flex:1;">
+        <label>NIM Mahasiswa:</label>
+        <input 
+          type="text" 
+          v-model.trim="form.nim" 
+          class="form-control" 
+          placeholder="Contoh: 041234567">
+        <span v-if="errors.nim" class="error-text" v-text="errors.nim"></span>
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label>Nama Lengkap:</label>
+        <input 
+          type="text" 
+          v-model.trim="form.nama" 
+          class="form-control" 
+          placeholder="Contoh: Budi Santoso">
+        <span v-if="errors.nama" class="error-text" v-text="errors.nama"></span>
+      </div>
+    </div>
+
+    <!-- Pilihan Ekspedisi -->
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>Pilihan Layanan Ekspedisi:</label>
+      <select v-model="form.ekspedisi" class="form-control">
+        <option value="">-- Pilih Ekspedisi --</option>
+        <option v-for="(eksp, index) in ekspedisi" :key="index" :value="eksp.nama">
+          {{ eksp.nama }}
+        </option>
+      </select>
+      <span v-if="errors.ekspedisi" class="error-text" v-text="errors.ekspedisi"></span>
+    </div>
+
+    <!-- Paket Bahan Ajar (Elemen Select & Detail Isi Paket) -->
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>Paket Bahan Ajar:</label>
+      <select v-model="selectedPaketKode" class="form-control">
+        <option value="">-- Pilih Paket Bahan Ajar --</option>
+        <option v-for="(pkt, index) in paket" :key="index" :value="pkt.kode">
+          {{ pkt.kode }} - {{ pkt.nama }}
+        </option>
+      </select>
+      <span v-if="errors.paket" class="error-text" v-text="errors.paket"></span>
+
+      <!-- Box Detail Informasi Isi Paket Muncul di Bawah Select -->
+      <div 
+        v-if="selectedPaketDetail" 
+        style="margin-top:8px; padding:12px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px;">
+        <strong style="color:#166534;">Isi Paket:</strong>
+        <ul style="margin-left: 20px; font-size:0.85rem; color:#14532d; margin-top:4px;">
+          <li v-for="(isi, idx) in selectedPaketDetail.isi" :key="idx">
+            Modul Bahan Ajar Kode: <strong>{{ isi }}</strong>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Tanggal Kirim & Total Harga -->
+    <div style="display:flex; gap:12px; margin-bottom:1.5rem;">
+      <div class="form-group" style="flex:1;">
+        <label>Tanggal Pengiriman:</label>
+        <input 
+          type="date" 
+          v-model="form.tanggalKirim" 
+          class="form-control">
+        <span class="help-text">
+          Format Tampilan: {{ form.tanggalKirim | formatTanggal }}
+        </span>
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label>Total Harga Paket:</label>
+        <input 
+          type="text" 
+          :value="form.totalHarga | rupiah" 
+          class="form-control" 
+          readonly 
+          style="background:#e2e8f0; font-weight:bold;">
+      </div>
+    </div>
+
+    <!-- Tombol Simpan Pemesanan -->
+    <div style="text-align:right;">
+      <button type="submit" class="btn btn-primary" style="padding:10px 24px;">
+        Buat Delivery Order (DO) Baru
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,16 @@
+<div v-show="isOpen" class="modal-overlay" @keyup.esc="cancel" tabindex="0">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 v-text="title"></h3>
+      <button class="btn btn-outline btn-sm" @click="cancel">✕</button>
+    </div>
+    <div class="modal-body">
+      <p v-if="message" v-text="message"></p>
+      <slot></slot>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" @click="cancel" v-text="cancelText"></button>
+      <button class="btn" :class="confirmBtnClass" @click="confirm" v-text="confirmText"></button>
+    </div>
+  </div>
+</div>
